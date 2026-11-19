@@ -105,7 +105,7 @@ def editar(origem: Path, saida: Path, plano: dict, cfg: dict) -> Path:
     try:
         if e.get("encoder", "auto") != "cpu" and not _nvenc_ruim:
             try:
-                subprocess.run(base + gpu + fim, check=True, cwd=saida.parent)
+                subprocess.run(base + gpu + fim, check=True, cwd=saida.parent, capture_output=True)   # sem a placa NVIDIA, cai na CPU em silencio
                 return saida
             except (subprocess.CalledProcessError, FileNotFoundError):
                 _nvenc_ruim = True
