@@ -116,6 +116,11 @@ def enviar_video(video: Path, titulo: str, direto: bool, token: Path) -> str:
     fonte = {"source": "FILE_UPLOAD", "video_size": tam, "chunk_size": tam, "total_chunk_count": 1}
     if direto:
         info = requests.post(f"{API}/v2/post/publish/creator_info/query/", headers=h, timeout=30).json()
+        erro = info.get("error", {}).get("code")
+        if erro not in (None, "ok"):
+            dica = (" -> falta o escopo video.publish: ative-o no portal (Sandbox) e rode "
+                    "'python enviar_tiktok.py login --direto'") if erro == "scope_not_authorized" else ""
+            raise SystemExit(f"Erro no creator_info: {erro} ({info['error'].get('message')}){dica}")
         niveis = info["data"]["privacy_level_options"]
         corpo = {"post_info": {"title": titulo[:150], "privacy_level": niveis[0]},
                  "source_info": fonte}
